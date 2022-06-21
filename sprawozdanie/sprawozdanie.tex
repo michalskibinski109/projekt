@@ -31,7 +31,7 @@
 
 
 
-\title{,,ROZPOZNAWANIE KOTKÓW OD PIESKÓW''}
+\title{ROZPOZNAWANIE KOTKÓW OD PIESKÓW}
 \author{Michał Skibiński (260352)}
 \date{30.05.2022}
 
@@ -39,34 +39,28 @@
 
 \maketitle
 
-\renewcommand*\contentsname{spis treści}
-\tableofcontents
-\newpage{}
-
 \section{Wstęp}
-\subsection{cel projektu}
 Przedmiotem projektu jest zadanie klasyfikacji binarnej (klasyfikacji kotów oraz psów).
-\subsection{narzędzia}
-\begin{itemize}
-\item problem rozwiązany został za pomocą  \textbf{konwolucyjnej sieci neuronowej (CNN)}.
+do rozwiązania problemu posłużyłem się \textbf{konwolucyjną siecią neuronową (CNN)}.
 Ponieważ sieci neuronowe operują na macierzach, są one szczególnie wydajne przy pracy z obrazami, 
 które tak naprawde są macierzami pikseli. \\
-\item Rozwiązanie zaprojektowane zostało w języku \textbf{python}, ze względu na jego prostotę, 
+Rozwiązanie zaprojektowałem  w języku \textit{python} używając biblioteki \textit{tensorflow}.\\
+Zdecydowałem się na język programowania \textit{python}, ze względu na jego prostotę, 
 niezawodność oraz wielorakość bibliotek ogólno-dostępnych. \\
-\item biblioteka użyta do rozwiązania problemu to \textbf{tensorflow}. Została ona użyta ze względu na możliwość 
+Bibliotekę \textit{tensorflow} wybrałem ze względu na możliwość 
 wykonywania złożonych operacji na sieciach neuronowych, przy użyciu stosunkowo
 niewielkiej ilości kodu. Oprócz tego biblioteka ta działa bardzo efektywnie,
  oraz została do niej napisana bogata dokumentacja.\\
-\end{itemize}
+
 \newpage{}
 \section{Model}
 
 
-\subsection{przygotowanie danych}
+\subsection{Przygotowanie danych}
 aby przygotować dane kolejno:
 \begin{enumerate}
 
-    \item zaprojektowany został algorytm do odczytywania zdjęć z zadanego folderu i tworzeniu folderu plików z podziałem na \textbf{dane testowe i treningowe} oraz klasy, tak by strukrura wyglądała następująco: \\
+    \item napisałem algorytm do odczytywania zdjęć z zadanego folderu i tworzeniu folderu plików z podziałem na \textbf{dane testowe i treningowe} oraz klasy, tak by strukrura wyglądała następująco: \\
     \begin{forest}
         for tree={
           font=\ttfamily,
@@ -103,17 +97,17 @@ aby przygotować dane kolejno:
         ]
       ]
       \end{forest}\\
-      ilość danych testowych zdefiniowana została na 20 procent wszystkich danych.
-    \item usunięta została różnica w ilości fotografii kotów i psów (ważne aby sieć neuronowa miała tyle samo danych z każdej z klas) 
-    \item dokonana została \textbf{normalizacji danych} -  wartości pikseli zostały przeskalowane, tak by pochodziły z zakresu [0,1)
-    \item dokonana została standaryzacja danych - wszystkie zdjęcia przeskalowane zostały do rozmiarów [224 x 224] px.
-    \item redukcja wymiarów danych przy użyciu \textbf{PCA} nie została zastosowana, ponieważ wiązała się ze zbyt dużą utratą danych. 
+      ilość danych testowych ustawiłem na 20 procent.
+    \item usunąłem różnicę w ilości fotografii kotów i psów (ważne aby sieć neuronowa miała tyle samo danych z każdej z klas) 
+    \item dokonałem \textbf{normalizacji danych} - przeskalowałem wartości pikseli tak by pochodziły z zakresu [0,1)
+    \item ustandaryzowałem dane - wszystkie zdjęcia przeskalowałem do rozmiarów [224 x 224] px.
+    \item zrezygnowałem z użycia \textbf{PCA} ponieważ redukcja wymiarów wiązała się ze zbyt dużą utratą danych. 
       
   \end{enumerate}
-\subsection{budowa modelu}
-model inspirowany jest dotychczasowymi modelami do rozwiązania tego typu problemów.
-Zanim pojawił się finałowy model stworzone zostało ok 10 innych modeli, każdy był usprawnieniem poprzedniego.
-przy udoskonalaniu modelu, nacisk kładziony był na zamianie \textbf{funkcji aktywujących} dla poszczególnych warstw oraz liczbie ich liczbie.\\\\
+\subsection{Budowa modelu}
+w fazie budowania modelu, inspirowałem się dotychczasowymi modelami do rozwiązania problemu.
+Zanim pojawił się finałowy model stworzyłem ok 10 innych modeli, każdy był usprawnieniem poprzedniego.
+skupiłem się na \textbf{funkcjach aktywujących} dla poszczególnych warstw oraz liczbie ich liczbie.\\\\
 
 włsności modelu:
 \begin{itemize}
@@ -126,56 +120,54 @@ włsności modelu:
   \item populacja w każdej generacji: 60
   \item \textbf{funkcja regularyzacji}: l2 (bez regularyzacji występowało \textbf{przetrenowanie modelu})
 \end{itemize}  
-
-\subsection{przebieg treningu}
+dla podanych parametrów zbudowane zostały medele, w których kolejno użyte zostały następujące metody optymalizacji
+\begin{itemize}
+  \item metoda spadku gradientu - (od SGD różni się tym, że nie używa losowości.)
+  \item metoda Adam - bazuje na stochastycznym spadku gradientu, ale jest oparta na adaptacyjnym szacowaniu momentów pierwszego i drugiego rzędu
+  \item metoda stochastycznego spadku gradientu - (metoda, która pojawiła się w finalnym modelu)
+\end{itemize}  
+poza tym każdy z modelów uruchomiłem dla danych poddanych PCA oraz dla danych nie poddanych PCA.
+\subsection{Przebieg treningu}
 
 \begin{figure}[h]
   \includegraphics[width=\linewidth]{TRENINNG.png}
 \end{figure}
 \newpage{}
 \section{Wyniki}
-\subsection{kryterium jakości modelu}
-jakość modelu mierzona została ze względu na \textbf{precyzję}.
-kryterium to zostało wybrane, ze względu na jego prostotę,
-precyzja jest dobrą metryką do 
-oceny wydajności modelu w prostych modelach, takich jak ten.\\\\
-$precyzja = \frac{ilość\ poprawnie\ sklasyfikowanych\ zdjęć}{ilość\ wszystkich\ zdjęć} * 100 \% $\\\\
-$przecyzja \in [0 \ \% \ , 100 \ \% \ ] \ $ - im wyższa tym lepsza
-
-\subsection{jakość modelu}
-
+\subsection{Jakość modelu}
 po skończonym treningu precyzja:
 \begin{itemize}
-  \item dla danych treningowych wynosiosła: \textbf{98 procent}
-  \item dla danych testowych: \textbf{93 procent}
-\end{itemize}
+\item dla danych treningowych wynosiosła: \textbf{98 procent}
+\item dla danych testowych: \textbf{93 procent}
+\end{itemize}  
 
-Do przedstawienia graficznie precyzji dla danych testowych
-modelu  użyta zotsała macierz pomyłek (confusion matrix).\\
-gdzie:
-\begin{itemize}
-  \item 0 - etykieta dla \textit{psa}
-  \item 1 - etykieta dla \textit{kota}
-\end{itemize}
-\includegraphics[scale=0.5]{conf.png}\\
-Jak widać model ma większe trudności z poprawnym zaklasyfikowaniem kotów niż psów.
-Prawie 6 \%  kotów zostało sklasyfikowanych jako psy - a tylko niecałe 2 \% psów zostało błędnie sklasyfikowanych jako koty  
+\subsection{Wyniki dla różnych metod optymalizacji}
+\includegraphics[width=\linewidth]{precpng.png}
+jak widać w przypadku użycia metody spadku gradientu doszło do przetrenowania modelu,
+mimo użytej funkcji regularyzacji.
+modele zbudowane z użyciem metody Adam oraz 
+metody stochastycznego spadku gradientu dały bardzo podobne do siebie wyniki,
+ponieważ działają one na bardzo podobnej zasadzie. 
+Użycie PCA w każdym wypadku przyczyniło się do obniżenia precyzji modelu, a tym samym do pogorszenia jego jakości.
 
-Aby zweryfikować poprawność modelu uruchominy on został dla zdjęć zrobionych przeze mnie oraz moich znajomych,
-tak aby mieć pewność że zdjęcia są różnych formatów, rozmiarów, różnej jakości i nie 
-były wcześniej w żaden sposób przerobione
+
+
+
+\subsection{prdykcje modelu}
 \begin{figure}[h]
   \includegraphics[width=\linewidth]{preedictions.png}
+  aby zweryfikować poprawność modelu uruchomiłem go dla zdjęć zrobionych przeze mnie oraz moich znajomych,
+  tak aby mieć pewność że zdjęcia są różnych formatów, rozmiarów, różnej jakości i nie 
+  były wcześniej w żaden sposób przerobione
 \end{figure}
-\newpage{}
-\subsection{przyczyny takiej a nie innej jakość modelu}
 model okazał się stosunkowo skuteczny, przy klasyfikacji 
 zdjęć nie spreparowanych skuteczność na poziomie 93 
 procent, możemy uznać za zadowalającą.\\\\
-\textbf{dlaczego model nie ma skuteczności na poziomie 100 procent?}\\
+\textbf{uwaga odnośnie jakości modelu}
+{dlaczego model nie ma skutecznośćci na poziomie 100 procent?}\\
 \begin{enumerate}
-  \item ponieważ urządzenie na którym prowadzone było trenowanie modelu dysponowało niewielkią mocą obliczeniową,
-   a operacje na zdjęciach, są skomplikowane - trenowanie sieci zakończone zostało gdy jej dokładość miała dalej tendencje 
+  \item ponieważ urządzenie wykorzystane do trenowania modelu dysponuje niewielką możliwością obliczeniową,
+   a operacje na zdjęciach, są skomplikowane, trenowanie sieci zakończone zostało gdy jej dokładość miała tendencje 
    rosnące.
   \item niektóre ze zdjęć mogły być nieostre, lub przedstawiać zwierzę które jest mieszanką genetyczną psa i kota.
   przykład takich zdjęć: 
@@ -185,13 +177,32 @@ procent, możemy uznać za zadowalającą.\\\\
 \end{enumerate} 
 
 
-\section{przypisy}
+
+\section{Wnioski}
+\begin{enumerate}
+  \item Wbrew informacjom, które można znaleźć w internecie użycie PCA mimo znacznego 
+  zmniejszenia ilości danych procesowanych przez model 
+  (w wypadku powyższego modelu 3-krotnie)
+  może przyczynić się do znaczącego pogorszenia jego jakości. 
+  W przypadku modelu, który procesuje uprzednio nie spreparowane zdjęcia, 
+  użycie PCA nie przynosi oczekiwanych efektów.
+  \item Użycie jako metody optymalizacji spadku gradientu, w każdym przypadku okazuje się mniej skuteczne od pozostałych użytych metod optymalizacji.
+  nie ma więc, żadnego argumentu przemawiającego za tym by jej użyć.
+  \item metoda optymalizacji Adam, choć w danym modelu okazała się nieznacznie mniej skuteczna, dla 
+  dla zdjęć przetworzonych przez algorytm PCA okazała się najskuteczniejsza. Tak więc metoda ta, 
+  wydaje się najstabilniejsza z metod testowanych.
+  \item metoda optymalizacji stochastycznego spadku gradientu okazała 
+  się najskuteczniejsza dla danych których szczegółowość była wysoka. 
+  Jeśli więc model trenowany jest na szczegółowych danych jest to najlepsza metoda optymalizacji.
+  \begin{figure}[h]
+    \includegraphics[width=\linewidth]{example.png}
+  \end{figure}
+\end{enumerate} 
+\section{Przypisy}
 zdjęcia użyte do budowy dla modelu:\\ 
 \href{https://www.kaggle.com/datasets/zippyz/cats-and-dogs-breeds-classification-oxford-dataset}
 {https://www.kaggle.com/datasets/zippyz/cats-and-dogs-breeds-classification-oxford-dataset}
 kod rozwiązania:\\
 \href{https://github.com/michalskibinski109/projekt/blob/main/PROJEKT.ipynb}
 {https://github.com/michalskibinski109/projekt/blob/main/PROJEKT.ipynb}
-
 \end{document}
-
